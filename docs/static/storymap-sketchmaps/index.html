@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>StoryMapJS: SketchMaps</title>
+<meta charset="utf-8">
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@knightlab" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="SketchMaps" />
+<meta property="og:description" content="">
+<meta property="og:url" content="https://uploads.knightlab.com/storymapjs/4830df5aeb961bd344e3206bdd535e5c/sketchmaps/index.html" />
+<meta property="og:image" content="https://uploads.knightlab.com/storymapjs/4830df5aeb961bd344e3206bdd535e5c/sketchmaps/_images/2018-10-I-meet-Clippy.jpeg" />
+<meta property="og:site_name" content="StoryMapJS" />
+<meta name="description" content="">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-touch-fullscreen" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="shortcut icon" href="//cdn.knightlab.com/libs/blueline/latest/assets/logos/favicon.ico">
+<link rel="stylesheet" href="//cdn.knightlab.com/libs/storymapjs/latest/css/storymap.css">
+<link rel="alternate" type="application/json+oembed" href="https://oembed.knightlab.com/storymap/?url=https%3A//uploads.knightlab.com/storymapjs/4830df5aeb961bd344e3206bdd535e5c/sketchmaps/index.html">
+<script type="text/javascript" src="//cdn.knightlab.com/libs/storymapjs/latest/js/storymap-min.js"></script>
+<style>
+html, body {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+#storymap-embed {
+    /*border: 1px solid #999;*/
+}
+</style>
+<!-- HTML5 shim, for IE6-8 support of HTML elements--><!--[if lt IE 9]>
+<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<body>
+<div id="storymap-embed"></div>
+
+<!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M95DDQGLWH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag(){ dataLayer.push(arguments); }
+
+    gtag('js', new Date());
+    gtag('config', 'G-M95DDQGLWH');
+    gtag('event', 'EmbeddedIn', {
+      'event_label': document.referrer,
+      'event_category': 'StoryMapJS',
+      'non_interaction': true
+    })
+
+  </script>
+
+<script type="text/javascript">
+    var storymap;
+    var storymap_url = '//uploads.knightlab.com/storymapjs/4830df5aeb961bd344e3206bdd535e5c/sketchmaps/published.json';
+    const urlParams = new URLSearchParams(window.location.search);
+
+	function onStoryMapTitle(e) {
+      document.title = "StoryMapJS: " + e.title;
+	};
+
+    function getScriptPath(scriptname) {
+        var scriptTags = document.getElementsByTagName('script');
+        for(var i = 0; i < scriptTags.length; i++) {
+            if(scriptTags[i].src.match(scriptname)) {
+                script_path = scriptTags[i].src;
+                return script_path.split('?')[0].split('/').slice(0, -1).join('/');
+            }
+        }
+        return '';
+    }
+
+    function getStartSlide() {
+        var slide = 0;
+        if (urlParams.has('start_at_slide')) {
+            slide = parseInt(urlParams.get('start_at_slide'), 10);
+        }
+        return slide;
+    }
+
+    function urlJoin(url, concat) { // see http://stackoverflow.com/questions/2676178/joining-relative-urls
+        function build(parts,container) {
+            for (var i = 0, l = parts.length; i < l; i ++) {
+                if (parts[i] == '..') {
+                    container.pop();
+                } else if (parts[i] == '.') {
+                    continue;
+                } else {
+                    container.push(parts[i]);
+                }
+            }
+        }
+        var url_parts = [ ];
+        build(url.split('/'),url_parts);
+        build(concat.split('/'),url_parts);
+        return url_parts.join('/');
+    }
+
+    function buildStoryMap(data) {
+        if (!data || !data.storymap) { return; }
+        var options = {
+            script_path: getScriptPath(/storymap(-min)?\.js/),
+            start_at_slide: getStartSlide()
+        };
+        var font = "stock:default";
+        if(data.font_css) {
+            font = data.font_css;
+        }
+        if(font.indexOf("stock:") == 0) {
+            var font_name = font.split(':')[1];
+            var base_url = urlJoin(options.script_path,"../css/fonts");
+            font = urlJoin(base_url, "font." + font_name + ".css");
+        } else if(!font.match('^(http|https|//)')) {
+            font = urlJoin(options.script_path, font);
+        }
+        KLStoryMap.loadCSS(font,function(){ console.log('font loaded: ' + font);});
+	    storymap = new KLStoryMap.StoryMap('storymap-embed', data, options, {
+            title: onStoryMapTitle
+        });
+        var mapType = storymap.options.map_type;
+        if(mapType && mapType.match('^zoomify.*')) {
+            ga('send', 'event', 'StoryMapJS', 'zoomify', document.referrer)
+        }
+    }
+
+    (function() {
+        fetch(storymap_url)
+            .then(response => response.json())
+            .then(data => buildStoryMap(data));
+    })();
+
+    window.onresize = function(event) {
+        if(storymap) {
+            storymap.updateDisplay();
+        }
+    }
+  </script>
+</body>
+</html>
