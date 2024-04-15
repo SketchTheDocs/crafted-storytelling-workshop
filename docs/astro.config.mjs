@@ -39,7 +39,7 @@ export default defineConfig({
 					link: '/about/',
 				},
 				{
-					label: '1️⃣ | Exercise 1',
+					label: '1️⃣ | Lab 1',
 					autogenerate: { directory: 'lab-01' },
 				},
 				{
